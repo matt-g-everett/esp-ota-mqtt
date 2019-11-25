@@ -19,7 +19,7 @@ typedef struct {
     const char *software;
     const char *version;
 
-    int connected;
+    uint8_t connected;
     uint32_t advertised_crc32;
     ota_state_t ota_state;
     time_t update_start_time;

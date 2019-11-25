@@ -3,10 +3,10 @@
 #include "esp_log.h"
 #include "mqtt_client.h"
 
-#include "crc32.h"
-#include "wifi.h"
+#include "iotp_crc32.h"
+#include "iotp_wifi.h"
 
-#include "ota_mqtt.h"
+#include "iotp_ota.h"
 
 static const char *TAG = "OTA";
 static const char *VERSION_MSG_JSON = "{\"ip\":\"%s\",\"type\":\"%s\",\"version\":\"%s\"}";
