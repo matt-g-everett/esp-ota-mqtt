@@ -14,6 +14,8 @@ typedef enum {
     DOWNLOADING
 } ota_state_t;
 
+typedef void (*OtaStateChanged)(uint8_t started);
+
 typedef struct {
     esp_mqtt_client_handle_t client;
     const char *software;
@@ -29,11 +31,12 @@ typedef struct {
 
     esp_ota_handle_t update_handle;
     const esp_partition_t *update_partition;
+    OtaStateChanged state_changed;
 } mqtt_ota_state_t;
 
 typedef mqtt_ota_state_t *mqtt_ota_state_handle_t;
 
-mqtt_ota_state_t* mqtt_ota_init(esp_mqtt_client_handle_t client, const char *software, const char *version);
+mqtt_ota_state_t* mqtt_ota_init(esp_mqtt_client_handle_t client, const char *software, const char *version, OtaStateChanged state_cb);
 int mqtt_ota_get_connected(mqtt_ota_state_handle_t state);
 void mqtt_ota_set_connected(mqtt_ota_state_handle_t state, int connected);
 void mqtt_ota_task(void *pParam);

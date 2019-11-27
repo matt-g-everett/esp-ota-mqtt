@@ -14,7 +14,7 @@ const static int UPDATE_TIMEOUT = 60; // 60 seconds to update the software befor
 
 
 mqtt_ota_state_handle_t mqtt_ota_init(esp_mqtt_client_handle_t client, const char *software,
-        const char *version) {
+        const char *version, OtaStateChanged state_cb) {
     mqtt_ota_state_t *state = malloc(sizeof(mqtt_ota_state_t));
     state->client = client;
     state->software = software;
@@ -28,6 +28,7 @@ mqtt_ota_state_handle_t mqtt_ota_init(esp_mqtt_client_handle_t client, const cha
     state->update_channel[0] = '\0';
     state->update_handle = 0;
     state->update_partition = NULL;
+    state->state_changed = state_cb;
 
     return state;
 }
@@ -56,6 +57,10 @@ static void reset_upgrade(mqtt_ota_state_handle_t state, int hard) {
     state->update_msg_id = -1;
     time(&state->update_start_time);
     state->ota_state = RUNNING;
+
+    if (!hard) {
+        state->state_changed(false);
+    }
 }
 
 void mqtt_ota_task(void *pParam) {
@@ -117,6 +122,7 @@ esp_err_t mqtt_ota_handle_data(mqtt_ota_state_handle_t state, esp_mqtt_event_han
         }
 
         state->ota_state = AWAITING_DOWNLOAD;
+        state->state_changed(true);
 
         int msg_id = esp_mqtt_client_subscribe(event->client, state->update_channel, 0);
         ESP_LOGI(TAG, "Subscription %d sent for channel %s.", msg_id, state->update_channel);
