@@ -107,7 +107,7 @@ void mqtt_ota_subscribe(esp_mqtt_client_handle_t client, const char *advertise_t
 esp_err_t mqtt_ota_handle_data(mqtt_ota_state_handle_t state, esp_mqtt_event_handle_t event, const char *advertise_topic) {
     int process_bin = false;
 
-    if (event->topic_len > 0 && strncmp(event->topic, "home/ota/advertise", event->topic_len) == 0) {
+    if (event->topic_len > 0 && strncmp(event->topic, advertise_topic, event->topic_len) == 0) {
         reset_upgrade(state, false);
 
         // Decode advertise message
